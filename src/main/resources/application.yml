@@ -1,0 +1,22 @@
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/shuaimall
+    password: 949704
+    username: root
+com:
+  feng:
+    shuaiqidemall:
+      security:
+        admin-role-name: ROLE_admin
+        token-name: USER-TOKEN
+        #Redis缓存过期时间（秒）
+        exp-time: 1800
+        using-dto: true
+        root-mapping: /**
+        # 允许用户登录、测试控制器等免登录
+        allow-uri: /error,/login,/create
+        cookie:
+          http-only: true
+          max-age: -1
+          path: /
