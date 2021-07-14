@@ -76,8 +76,7 @@
     update user_info
     set name = #{name,jdbcType=VARCHAR},
       password = #{password,jdbcType=VARCHAR},
-      role = #{role,jdbcType=VARCHAR}
-    where id = #{id,jdbcType=INTEGER}
+    where id = #{id}
   </update>
   <select id="selectByName" parameterType="string" resultMap="BaseResultMap">
     select *
