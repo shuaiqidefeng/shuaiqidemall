@@ -18,4 +18,5 @@ public interface UserInfoMapper {
     int updateByPrimaryKey(UserInfo record);
 
     List<UserInfo> selectByName(String name);
+
 }

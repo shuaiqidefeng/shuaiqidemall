@@ -4,7 +4,7 @@ import com.feng.shuaiqidemall.config.AccountSecurityConfig;
 import com.feng.shuaiqidemall.dto.ResultDTO;
 import com.feng.shuaiqidemall.entity.UserInfo;
 import com.feng.shuaiqidemall.mapper.UserInfoMapper;
-import com.feng.shuaiqidemall.service.BuyerService;
+import com.feng.shuaiqidemall.service.UserService;
 import com.feng.shuaiqidemall.service.CurrentService;
 import com.feng.shuaiqidemall.service.RedisService;
 import com.feng.shuaiqidemall.utils.CookieUtils;
@@ -17,7 +17,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 
 @Service
-public class BuyerServiceImpl implements BuyerService {
+public class UserServiceImpl implements UserService {
 
     @Autowired
     private UserInfoMapper userInfoMapper;
@@ -65,7 +65,20 @@ public class BuyerServiceImpl implements BuyerService {
 
     @Override
     public ResultDTO update(UserInfo userInfo) {
-        return null;
+        //获得当前用户
+        String uuid = currentService.getToken();
+        UserInfo currentUser = redisService.get(uuid, UserInfo.class);
+        //判断最新用户名是否存在
+        List<UserInfo> mapList = userInfoMapper.selectByName(userInfo.getName());
+        if (!mapList.get(0).getName().equals(currentUser.getName())&& mapList.size() > 0){
+            return ResultDTO.failure("该用户名已经存在");
+        }
+        //更新操作
+        userInfo.setPassword(PasswordUtils.encode(userInfo.getPassword()));
+        userInfo.setId(currentUser.getId());
+        int i = userInfoMapper.updateByPrimaryKeySelective(userInfo);
+        if (i > 0) return ResultDTO.success("更新成功",userInfo);
+        return ResultDTO.failure("更新失败");
     }
 
 
