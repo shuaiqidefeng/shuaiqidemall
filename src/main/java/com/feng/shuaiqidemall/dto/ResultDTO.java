@@ -46,6 +46,18 @@ public class ResultDTO<T> implements Serializable {
         return data;
     }
 
+    public void setSuccess(boolean success) {
+        isSuccess = success;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
+    }
+
+    public void setData(T data) {
+        this.data = data;
+    }
+
     public boolean isSuccess() {
         return isSuccess;
     }

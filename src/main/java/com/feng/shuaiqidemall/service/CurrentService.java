@@ -2,7 +2,7 @@ package com.feng.shuaiqidemall.service;
 
 
 import com.feng.shuaiqidemall.config.AccountSecurityConfig;
-import com.feng.shuaiqidemall.entity.Buyer;
+import com.feng.shuaiqidemall.entity.UserInfo;
 import com.feng.shuaiqidemall.exception.AccountException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -33,17 +33,17 @@ public class CurrentService {
         throw new AccountException("请求中不存在token，请登录后使用");
     }
 
-    public Buyer getCurrentUser() {
+    public UserInfo getCurrentUser() {
         String token = getToken();
         return getUser(token);
     }
 
-    public Buyer getUser(String token) {
-        Buyer buyer = redisService.get(token, Buyer.class);
-        if (Objects.isNull(buyer)) {
+    public UserInfo getUser(String token) {
+        Object user = redisService.get(token);
+        if (Objects.isNull(user)) {
             throw new AccountException("无效token:" + token);
         }
-        return buyer;
+        return (UserInfo) user;
     }
 
     public HttpServletRequest getHttpServletRequest() {

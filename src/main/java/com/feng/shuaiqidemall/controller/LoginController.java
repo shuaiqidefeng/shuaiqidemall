@@ -2,8 +2,7 @@ package com.feng.shuaiqidemall.controller;
 
 
 import com.feng.shuaiqidemall.dto.ResultDTO;
-import com.feng.shuaiqidemall.entity.Buyer;
-import com.feng.shuaiqidemall.entity.Seller;
+import com.feng.shuaiqidemall.entity.UserInfo;
 import com.feng.shuaiqidemall.service.BuyerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -15,24 +14,18 @@ public class LoginController {
     @Autowired
     private BuyerService buyerService;
 
-    @PostMapping("/buyer/create")
-    public ResultDTO<Buyer> buyerCreat(@RequestBody Buyer buyer){
-        return buyerService.create(buyer);
+    @PostMapping("/create")
+    public ResultDTO<UserInfo> buyerCreat(@RequestBody UserInfo user){
+        return buyerService.create(user);
     }
 
-    @PostMapping("/seller/create")
-    public ResultDTO<Seller> sellerCreat(@RequestBody Seller seller){
-        return buyerService.create(seller);
+    @PostMapping("/login")
+    public ResultDTO<UserInfo> buyerLogin(@RequestBody UserInfo user){
+        return buyerService.login(user);
     }
 
-    @PostMapping("/buyer/login")
-    public ResultDTO<Buyer> buyerLogin(@RequestBody Buyer buyer){
-        return buyerService.login(buyer);
+    @PostMapping("/update")
+    public ResultDTO<UserInfo> buyerUpdate(@RequestBody UserInfo user){
+        return buyerService.update(user);
     }
-
-    @PostMapping("/seller/login")
-    public ResultDTO<Buyer> sellerLogin(@RequestBody Seller seller){
-        return buyerService.login(seller);
-    }
-
 }

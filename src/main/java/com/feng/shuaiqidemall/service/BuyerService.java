@@ -1,11 +1,12 @@
 package com.feng.shuaiqidemall.service;
 
 import com.feng.shuaiqidemall.dto.ResultDTO;
-import com.feng.shuaiqidemall.entity.Buyer;
-import com.feng.shuaiqidemall.entity.User;
+import com.feng.shuaiqidemall.entity.UserInfo;
 
 public interface BuyerService {
-    <E extends User>ResultDTO create(E e);
+    ResultDTO create(UserInfo userInfo);
 
-    <E extends User> ResultDTO login(E e);
+    ResultDTO login(UserInfo userInfo);
+
+    ResultDTO update(UserInfo userInfo);
 }

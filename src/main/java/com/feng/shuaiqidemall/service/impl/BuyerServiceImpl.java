@@ -2,11 +2,8 @@ package com.feng.shuaiqidemall.service.impl;
 
 import com.feng.shuaiqidemall.config.AccountSecurityConfig;
 import com.feng.shuaiqidemall.dto.ResultDTO;
-import com.feng.shuaiqidemall.entity.Buyer;
-import com.feng.shuaiqidemall.entity.Seller;
-import com.feng.shuaiqidemall.entity.User;
-import com.feng.shuaiqidemall.mapper.BuyerMapper;
-import com.feng.shuaiqidemall.mapper.SellerMapper;
+import com.feng.shuaiqidemall.entity.UserInfo;
+import com.feng.shuaiqidemall.mapper.UserInfoMapper;
 import com.feng.shuaiqidemall.service.BuyerService;
 import com.feng.shuaiqidemall.service.CurrentService;
 import com.feng.shuaiqidemall.service.RedisService;
@@ -23,10 +20,7 @@ import java.util.List;
 public class BuyerServiceImpl implements BuyerService {
 
     @Autowired
-    private BuyerMapper buyerMapper;
-
-    @Autowired
-    private SellerMapper sellerMapper;
+    private UserInfoMapper userInfoMapper;
 
     @Autowired
     private RedisService redisService;
@@ -38,44 +32,28 @@ public class BuyerServiceImpl implements BuyerService {
     private CurrentService currentService;
 
     @Override
-    public <E extends User> ResultDTO create(E e) {
-        List<E> mapList = null;
-        if (!e.getClass().equals(Buyer.class) && !e.getClass().equals(Seller.class)){
-            throw new RuntimeException("传入参数有误");
-        }else if (e.getClass().equals(Buyer.class)){
-            mapList = (List<E>) buyerMapper.selectByName(e.getName());
-        }else if (e.getClass().equals(Seller.class)){
-            mapList = (List<E>) sellerMapper.selectByName(e.getName());
-        }
-
+    public ResultDTO create(UserInfo userInfo) {
+        List<UserInfo> mapList = userInfoMapper.selectByName(userInfo.getName());
+        //判断是否已有该用户名
         if (mapList.size() > 0){
-            return ResultDTO.failure("用户名已存在");
+                return ResultDTO.failure("用户名已存在");
         }
-        e.setPassword(PasswordUtils.encode(e.getPassword()));
-        if (e.getClass().equals(Buyer.class)){
-            Buyer buyer = (Buyer)e;
-            buyerMapper.insert(buyer);
-        }else if (e.getClass().equals(Seller.class)){
-            Seller seller = (Seller)e;
-            sellerMapper.insert(seller);
-        }
-        return ResultDTO.success("注册成功",e);
+        userInfo.setPassword(PasswordUtils.encode(userInfo.getPassword()));
+        userInfoMapper.insert(userInfo);
+        return ResultDTO.success("注册成功",userInfo);
     }
 
     @Override
-    public <E extends User> ResultDTO login(E e) {
-        List<E> mapList = null;
-        if (!e.getClass().equals(Buyer.class) && !e.getClass().equals(Seller.class)){
-            throw new RuntimeException("传入参数有误");
-        }else if (e.getClass().equals(Buyer.class)){
-            mapList = (List<E>) buyerMapper.selectByName(e.getName());
-        }else if (e.getClass().equals(Seller.class)){
-            mapList = (List<E>) sellerMapper.selectByName(e.getName());
-        }
+    public ResultDTO login(UserInfo userInfo) {
+        List<UserInfo> mapList = userInfoMapper.selectByName(userInfo.getName());
+
         if (mapList.isEmpty()){
             return ResultDTO.failure("不存在该用户");
         }
-        if (PasswordUtils.matches(e.getPassword(),mapList.get(0).getPassword())){
+        if (!mapList.get(0).getRole().equals(userInfo.getRole())){
+            return ResultDTO.failure(userInfo.getRole().equals("buyer") ? "请检查是否为卖家账号" : "请检查是否为买家账号");
+        }
+        if (PasswordUtils.matches(userInfo.getPassword(),mapList.get(0).getPassword())){
             String uuid = IdUtils.uuidWithDashes();//使用uuid作为令牌
             redisService.set(uuid,mapList.get(0),security.getExpTime());//插入缓存
             HttpServletResponse response = currentService.getHttpServletResponse();
@@ -84,4 +62,11 @@ public class BuyerServiceImpl implements BuyerService {
         }
         return ResultDTO.failure("密码错误");
     }
+
+    @Override
+    public ResultDTO update(UserInfo userInfo) {
+        return null;
+    }
+
+
 }
