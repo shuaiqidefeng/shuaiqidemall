@@ -9,4 +9,6 @@ public interface UserService {
     ResultDTO login(UserInfo userInfo);
 
     ResultDTO update(UserInfo userInfo);
+
+    ResultDTO logout();
 }

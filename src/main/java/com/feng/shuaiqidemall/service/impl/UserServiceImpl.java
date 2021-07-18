@@ -81,5 +81,14 @@ public class UserServiceImpl implements UserService {
         return ResultDTO.failure("更新失败");
     }
 
+    @Override
+    public ResultDTO logout() {
+        String uuid = currentService.getToken();
+        redisService.del(uuid);
+        HttpServletResponse response = currentService.getHttpServletResponse();
+        CookieUtils.setCookie(response,security.getTokenName(),"",security.getCookie().getMaxAge(),security.getCookie().getPath(),security.getCookie().getHttpOnly());
+        return ResultDTO.success("退出成功");
+    }
+
 
 }

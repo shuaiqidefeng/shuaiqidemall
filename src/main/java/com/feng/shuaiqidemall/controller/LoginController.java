@@ -15,17 +15,22 @@ public class LoginController {
     private UserService userService;
 
     @PostMapping("/create")
-    public ResultDTO<UserInfo> buyerCreat(@RequestBody UserInfo user){
+    public ResultDTO<UserInfo> userCreat(@RequestBody UserInfo user){
         return userService.create(user);
     }
 
     @PostMapping("/login")
-    public ResultDTO<UserInfo> buyerLogin(@RequestBody UserInfo user){
+    public ResultDTO<UserInfo> userLogin(@RequestBody UserInfo user){
         return userService.login(user);
     }
 
     @PostMapping("/update")
-    public ResultDTO<UserInfo> buyerUpdate(@RequestBody UserInfo user){
+    public ResultDTO<UserInfo> userUpdate(@RequestBody UserInfo user){
         return userService.update(user);
+    }
+
+    @GetMapping("/logout")
+    public ResultDTO<UserInfo> userLogout(){
+        return userService.logout();
     }
 }
