@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.feng.shuaiqidemall.mapper.FirstTagMapper" >
+  <resultMap id="BaseResultMap" type="com.feng.shuaiqidemall.entity.FirstTag" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="tag_name" property="tagName" jdbcType="VARCHAR" />
+    <collection property="secondTags" ofType="com.feng.shuaiqidemall.entity.SecondTag" >
+      <id column="stid" property="id"></id>
+      <result column="sname" property="tagName"></result>
+    </collection>
+  </resultMap>
+  <select id="findTag" resultMap="BaseResultMap">
+    select ft.*,st.id as stid , st.tag_name as sname from first_tag ft,second_tag st where ft.id = st.first_tag_id
+  </select>
+
+  <select id="findTagByName" resultMap="BaseResultMap">
+    select * from first_tag where tag_name = #{name}
+  </select>
+
+  <insert id="insert" parameterType="com.feng.shuaiqidemall.entity.FirstTag" >
+    <selectKey resultType="java.lang.Integer" order="AFTER" keyProperty="id">
+
+      SELECT LAST_INSERT_ID() AS id
+
+    </selectKey>
+    insert into first_tag
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="tagName != null" >
+        tag_name,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="tagName != null" >
+        #{tagName,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+</mapper>
