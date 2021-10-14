@@ -35,10 +35,8 @@ public class SellerServiceImpl implements SellerService {
     @Override
     public ResultDTO insertGood(Good good) {
         //获得当前用户
-        String uuid = currentService.getToken();
-        UserInfo currentUser = redisService.get(uuid, UserInfo.class);
+        UserInfo currentUser = currentService.getCurrentUser();
         //向商品表增加商品
-        if (currentUser.getRole().equals("buyer")) return ResultDTO.failure("你不是商家，无此权限");
         boolean isInsertSuccess = tagService.insertTag(good);
         if (!isInsertSuccess) return ResultDTO.failure("请正确也输入标签");
         good.setSellerId(currentUser.getId());

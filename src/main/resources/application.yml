@@ -20,3 +20,6 @@ com:
           http-only: true
           max-age: -1
           path: /
+mybatis:
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl

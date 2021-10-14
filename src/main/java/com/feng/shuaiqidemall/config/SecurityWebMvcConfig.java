@@ -1,9 +1,11 @@
 package com.feng.shuaiqidemall.config;
 
+import com.feng.shuaiqidemall.config.userInterceptor.BuyerInterceptor;
+import com.feng.shuaiqidemall.config.userInterceptor.SellerInterceptor;
+import com.feng.shuaiqidemall.config.userInterceptor.UserInterceptor;
 import com.feng.shuaiqidemall.service.CurrentService;
 import com.feng.shuaiqidemall.service.RedisService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.HandlerInterceptor;
@@ -25,9 +27,18 @@ public class SecurityWebMvcConfig extends WebMvcConfigurationSupport {
     private CurrentService currentService;
 
     @Bean
-    @ConditionalOnMissingBean
     public HandlerInterceptor getUserInterceptor() {
         return new UserInterceptor(redisService, security, currentService);
+    }
+
+    @Bean
+    public HandlerInterceptor getBuyerInterceptor() {
+        return new BuyerInterceptor(currentService);
+    }
+
+    @Bean
+    public HandlerInterceptor getSellerInterceptor() {
+        return new SellerInterceptor(currentService);
     }
 
     @Override
@@ -35,6 +46,10 @@ public class SecurityWebMvcConfig extends WebMvcConfigurationSupport {
         registry.addInterceptor(getUserInterceptor())
                 .addPathPatterns(security.getRootMapping())
                 .excludePathPatterns(Arrays.asList(security.getAllowUri()));
+        registry.addInterceptor(getBuyerInterceptor())
+                .addPathPatterns("/buyer/**");
+        registry.addInterceptor(getSellerInterceptor())
+                .addPathPatterns("/seller/**");
         super.addInterceptors(registry);
     }
 }

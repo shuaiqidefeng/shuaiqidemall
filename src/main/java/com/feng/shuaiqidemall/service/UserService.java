@@ -11,4 +11,5 @@ public interface UserService {
     ResultDTO update(UserInfo userInfo);
 
     ResultDTO logout();
+
 }

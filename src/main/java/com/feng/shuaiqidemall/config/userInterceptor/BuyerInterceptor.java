@@ -1,12 +1,12 @@
-package com.feng.shuaiqidemall.config;
+package com.feng.shuaiqidemall.config.userInterceptor;
 
 
+import com.feng.shuaiqidemall.config.AccountSecurityConfig;
 import com.feng.shuaiqidemall.dto.ResultDTO;
 import com.feng.shuaiqidemall.entity.UserInfo;
 import com.feng.shuaiqidemall.service.CurrentService;
 import com.feng.shuaiqidemall.service.RedisService;
 import org.springframework.core.MethodParameter;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.server.ServerHttpRequest;
@@ -22,7 +22,7 @@ import java.util.Arrays;
 import java.util.Objects;
 import java.util.Optional;
 
-public class UserInterceptor implements HandlerInterceptor, ResponseBodyAdvice<Object> {
+public class BuyerInterceptor implements HandlerInterceptor, ResponseBodyAdvice<Object> {
 
     private RedisService redisService;
 
@@ -30,39 +30,20 @@ public class UserInterceptor implements HandlerInterceptor, ResponseBodyAdvice<O
 
     private CurrentService currentService;
 
-    public UserInterceptor(RedisService redisService, AccountSecurityConfig security, CurrentService currentService) {
-        this.redisService = redisService;
-        this.security = security;
+    public BuyerInterceptor( CurrentService currentService) {
         this.currentService = currentService;
     }
 
     @Override
     // 处理Controller之前
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-        ResultDTO dto = ResultDTO.failure("token不存在，请登录后使用");
+        ResultDTO dto = ResultDTO.failure("你不是买家，无此权限");
         //从Cookie中获取token
-        if (Objects.isNull(request.getCookies())) {
-            dto.setMessage("token不存在，请登录后使用");
+        if (!currentService.getCurrentUser().getRole().equals("buyer")) {
+            dto.setMessage("你不是买家，无此权限");
             setFailure(response, dto);
             return false;
         }
-        Optional<Cookie> optional = Arrays.stream(request.getCookies()).filter(cookie -> Objects.equals(security.getTokenName(), cookie.getName())).findFirst();
-        if (!optional.isPresent()) {
-            dto.setMessage("token不存在，请登录后使用");
-            setFailure(response, dto);
-            return false;
-        }
-        String token = optional.get().getValue();
-        //拼接出Redis的key
-        String key = token;
-        //查找缓存中
-        UserInfo userInfo = redisService.get(token, UserInfo.class);
-        if (Objects.isNull(userInfo)) {
-            dto.setMessage("无效的token，请重新登录");
-            setFailure(response, dto);
-            return false;
-        }
-        redisService.set(key, userInfo, security.getExpTime());//刷新缓存时间
         return true;
     }
 

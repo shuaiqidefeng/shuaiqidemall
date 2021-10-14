@@ -125,4 +125,13 @@
       seller_id = #{sellerId,jdbcType=INTEGER}
     where id = #{id,jdbcType=INTEGER}
   </update>
+  <select id="selectByTag" parameterType="string" resultMap="BaseResultMap">
+    select * from good
+    where name like "%${tag}%"
+       or detail like "%${tag}%"
+       or tag like "%，${tag}，%"
+  </select>
+  <select id="findAll" resultMap="BaseResultMap">
+    select * from good
+  </select>
 </mapper>

@@ -66,8 +66,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public ResultDTO update(UserInfo userInfo) {
         //获得当前用户
-        String uuid = currentService.getToken();
-        UserInfo currentUser = redisService.get(uuid, UserInfo.class);
+        UserInfo currentUser = currentService.getCurrentUser();
         //判断最新用户名是否存在
         List<UserInfo> mapList = userInfoMapper.selectByName(userInfo.getName());
         if (!mapList.get(0).getName().equals(currentUser.getName())&& mapList.size() > 0){
